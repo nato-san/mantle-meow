@@ -3,7 +3,7 @@ import { Providers } from "@/app/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "INTERN CAT",
+  title: "Mantle Meow",
   description: "Raise a personalized AI Intern Cat that researches Mantle and on-chain signals with you.",
 };
 
