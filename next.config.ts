@@ -1,11 +1,7 @@
 import type { NextConfig } from "next";
-import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
-const nextConfig = (phase: string): NextConfig => {
-  return {
-    distDir: phase === PHASE_DEVELOPMENT_SERVER ? ".next" : ".next-prod",
-    devIndicators: false,
-  };
+const nextConfig: NextConfig = {
+  devIndicators: false,
 };
 
 export default nextConfig;
