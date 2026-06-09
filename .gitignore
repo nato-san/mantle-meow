@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+.next-prod/
+out/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# TypeScript / tool caches
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+.eslintcache
+
+# Local workspace files
+work/
+outputs/
+savepoints/
+
+# OS files
+.DS_Store
