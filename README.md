@@ -12,6 +12,16 @@ As users investigate new topics, the cat gains experience, builds memories, unlo
 
 ---
 
+## Recommended Environment
+
+For the best experience, INTERN CAT is currently recommended for desktop browsers.
+
+Wallet connection and Passport NFT minting work best with desktop browsers using MetaMask or Rabby.
+
+Mobile browsers are supported for exploration and demo purposes, but some wallet-related functionality may be limited depending on the device and wallet app.
+
+---
+
 ## Core Concept
 
 Most analytics platforms focus on displaying data.
@@ -224,6 +234,16 @@ INTERN CATは、Mantle Turing Test Hackathon 2026向けに開発された、Mant
 ユーザーはプロフィール画像、名前、性格、コンパニオンスタイル、そしてMVPに用意されたIntern Catバリエーションを選び、自分だけのIntern Catを作成・育成できます。その猫と一緒に、Mantleエコシステム、MNT市場、ウォレット活動、RWA、Nansenを活用したリサーチシグナルを探索します。
 
 新しいトピックを調べるたびに猫は経験値を獲得し、記憶を蓄積し、アイテムを集め、知識チャレンジを進め、Mantle Sepolia上でPassport NFTをMintすることで旅のオンチェーン上のマイルストーンを残せます。
+
+---
+
+## 推奨環境
+
+INTERN CATは現在、PCブラウザでの利用を推奨しています。
+
+ウォレット接続およびPassport NFTのMintは、MetaMaskまたはRabbyを利用したPCブラウザで最も安定して動作します。
+
+モバイルブラウザでも閲覧やデモ体験は可能ですが、端末やウォレットアプリによっては一部機能に制限がある場合があります。
 
 ---
 
