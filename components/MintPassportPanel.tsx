@@ -6,8 +6,10 @@ import { useAccount, useChainId, useConnect, useSwitchChain, useWaitForTransacti
 import { useCat } from "@/lib/catStore";
 import { personalityCopy } from "@/lib/personality";
 import { activeMantleChain, explorerTxUrl } from "@/lib/web3/chains";
+import { hasWalletConnectProjectId } from "@/lib/web3/config";
 import { internCatPassportAbi, internCatPassportAddress } from "@/lib/web3/passportContract";
 import { buildPassportMetadata } from "@/lib/web3/passportMetadata";
+import { hasInjectedWalletProvider, isMobileBrowser, selectWalletConnector } from "@/lib/web3/selectConnector";
 
 const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
@@ -20,7 +22,8 @@ export function MintPassportPanel() {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
   const wrongNetwork = isConnected && chainId !== activeMantleChain.id;
-  const injectedConnector = connectors[0];
+  const connector = selectWalletConnector(connectors);
+  const needsMobileWalletConnect = isMobileBrowser() && !hasWalletConnectProjectId && !hasInjectedWalletProvider();
 
   useEffect(() => {
     if (!isSuccess || !hash) return;
@@ -92,15 +95,38 @@ export function MintPassportPanel() {
         </p>
       ) : null}
 
+      {needsMobileWalletConnect ? (
+        <p className="mt-3 rounded-lg border border-mint/25 bg-ink/55 p-3 text-sm leading-6 text-white/72">
+          {locale === "en"
+            ? "Mobile wallet connection needs WalletConnect setup. The app still works without a wallet, and minting is best on desktop until setup is complete."
+            : "スマホのウォレット接続にはWalletConnect設定が必要です。設定前でもアプリは使えます。Mintは設定完了までPC利用がおすすめです。"}
+        </p>
+      ) : null}
+
       {!isConnected ? (
         <button
           type="button"
-          onClick={() => injectedConnector && connect({ connector: injectedConnector })}
-          disabled={!injectedConnector || isConnecting}
+          onClick={() => connector && !needsMobileWalletConnect && connect({ connector })}
+          disabled={!connector || isConnecting || needsMobileWalletConnect}
+          title={
+            needsMobileWalletConnect
+              ? locale === "en"
+                ? "Mobile wallet connection requires WalletConnect setup."
+                : "スマホのウォレット接続にはWalletConnect設定が必要です。"
+              : undefined
+          }
           className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-mint px-5 font-black text-ink transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Wallet size={18} />
-          {isConnecting ? (locale === "en" ? "Connecting..." : "接続中...") : t.connectWallet}
+          {needsMobileWalletConnect
+            ? locale === "en"
+              ? "Wallet setup"
+              : "接続設定"
+            : isConnecting
+              ? locale === "en"
+                ? "Connecting..."
+                : "接続中..."
+              : t.connectWallet}
         </button>
       ) : wrongNetwork ? (
         <button
