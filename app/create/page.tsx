@@ -7,7 +7,6 @@ import { AppShell } from "@/components/AppShell";
 import { CatPortrait } from "@/components/CatPortrait";
 import { CatSpeech } from "@/components/CatSpeech";
 import { OwnerBadge } from "@/components/OwnerBadge";
-import { PageHeader } from "@/components/PageHeader";
 import { useCat } from "@/lib/catStore";
 
 export default function CreatePage() {
@@ -82,26 +81,34 @@ export default function CreatePage() {
 
   return (
     <AppShell>
-      <PageHeader kicker={t.createKicker} title={t.createTitle} body={t.createBody} />
+      <header className="mb-4 lg:mb-3">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-coral">{t.createKicker}</p>
+        <h1 className="hero-title mt-2 text-4xl font-black leading-tight text-white sm:text-5xl lg:text-4xl">{t.createTitle}</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-white/68 sm:text-base lg:mt-2 lg:text-sm lg:leading-6">{t.createBody}</p>
+      </header>
 
-      <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="neon-panel rounded-lg p-5">
-          <label className="cyber-card grid min-h-64 cursor-pointer place-items-center rounded-lg border border-mint/35 bg-mint/10 p-6 text-center transition hover:bg-mint/20">
+      <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+        <div className="neon-panel rounded-lg p-5 lg:p-4">
+          <label className="cyber-card grid min-h-56 cursor-pointer place-items-center rounded-lg border border-mint/35 bg-mint/10 p-6 text-center transition hover:bg-mint/20 lg:min-h-32 lg:p-4">
             <input type="file" accept="image/*" className="sr-only" onChange={handleFile} />
-            <span className="grid h-16 w-16 place-items-center rounded-lg bg-mint text-ink">
-              <ImagePlus size={34} />
+            <span className="flex flex-col items-center gap-4 lg:flex-row lg:text-left">
+              <span className="grid h-16 w-16 place-items-center rounded-lg bg-mint text-ink lg:h-11 lg:w-11 lg:shrink-0">
+                <ImagePlus className="h-8 w-8 lg:h-6 lg:w-6" />
+              </span>
+              <span>
+                <span className="block text-2xl font-black uppercase text-white lg:text-xl">{t.uploadPhoto}</span>
+                <span className="mt-2 block text-sm font-bold text-white/55 lg:mt-1">{t.selectPhoto}</span>
+              </span>
             </span>
-            <span className="mt-4 text-2xl font-black uppercase text-white">{t.uploadPhoto}</span>
-            <span className="mt-2 text-sm font-bold text-white/55">{t.selectPhoto}</span>
           </label>
 
-          <div className="mt-5 grid gap-4">
+          <div className="mt-5 grid gap-4 lg:mt-4 lg:gap-3">
             <label>
               <span className="text-xs font-black uppercase tracking-[0.16em] text-white/45">{t.catNameLabel}</span>
               <input
                 value={catName}
                 onChange={(event) => setCatName(event.target.value)}
-                className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-white outline-none transition focus:border-mint"
+                className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-white outline-none transition focus:border-mint lg:min-h-10"
               />
             </label>
             <label>
@@ -109,7 +116,7 @@ export default function CreatePage() {
               <input
                 value={owner}
                 onChange={(event) => setOwner(event.target.value)}
-                className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-white outline-none transition focus:border-mint"
+                className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-white outline-none transition focus:border-mint lg:min-h-10"
               />
             </label>
             <label>
@@ -117,14 +124,14 @@ export default function CreatePage() {
               <input
                 value={specialty}
                 onChange={(event) => setSpecialty(event.target.value)}
-                className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-white outline-none transition focus:border-mint"
+                className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-white outline-none transition focus:border-mint lg:min-h-10"
               />
             </label>
           </div>
 
-          <section className="mt-5 rounded-lg border border-mint/30 bg-mint/10 p-4">
+          <section className="mt-5 rounded-lg border border-mint/30 bg-mint/10 p-4 lg:mt-4 lg:p-3">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-mint">Save Data</p>
-            <p className="mt-2 text-sm leading-6 text-white/58">
+            <p className="mt-2 text-sm leading-6 text-white/58 lg:hidden">
               {locale === "en"
                 ? "Back up your active cat, retired cats, items, XP, and memories as a JSON file."
                 : "今いる猫、引退猫、アイテム、XP、記憶をJSONファイルとしてバックアップできます。"}
@@ -133,7 +140,7 @@ export default function CreatePage() {
               <button
                 type="button"
                 onClick={exportSaveData}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-mint/45 px-4 font-black text-white transition hover:bg-mint hover:text-ink"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-mint/45 px-4 font-black text-white transition hover:bg-mint hover:text-ink lg:min-h-10"
               >
                 <Download size={17} />
                 Export Save Data
@@ -141,7 +148,7 @@ export default function CreatePage() {
               <button
                 type="button"
                 onClick={() => importInputRef.current?.click()}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/12 px-4 font-black text-white transition hover:bg-white/10"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/12 px-4 font-black text-white transition hover:bg-white/10 lg:min-h-10"
               >
                 <Upload size={17} />
                 Import Save Data
@@ -152,24 +159,24 @@ export default function CreatePage() {
           </section>
         </div>
 
-        <div className="neon-panel relative overflow-hidden rounded-lg p-5">
+        <div className="neon-panel relative self-start overflow-hidden rounded-lg p-5 lg:p-4">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(116,247,199,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(116,247,199,0.05)_1px,transparent_1px)] bg-[size:34px_34px]" />
           <div className="relative z-10">
             <p className="text-sm font-black uppercase tracking-[0.18em] text-mint">{t.catPreview}</p>
-            <div className="mt-5 grid gap-5 sm:grid-cols-[1fr_0.9fr] sm:items-center">
-              <CatPortrait variant="front" className="mx-auto h-80 w-full max-w-sm" showAccessories={false} />
-              <div className="rounded-lg border border-white/10 bg-ink/70 p-5">
+            <div className="mt-5 grid gap-5 sm:grid-cols-[1fr_0.9fr] sm:items-center lg:mt-3 lg:gap-4">
+              <CatPortrait variant="front" className="mx-auto h-80 w-full max-w-sm lg:h-60 lg:max-w-xs" showAccessories={false} />
+              <div className="rounded-lg border border-white/10 bg-ink/70 p-5 lg:p-4">
                 <OwnerBadge />
-                <p className="mt-5 text-4xl font-black text-white">{catName}</p>
+                <p className="mt-5 text-4xl font-black text-white lg:mt-4 lg:text-3xl">{catName}</p>
                 <p className="mt-2 text-lg font-bold text-mint">{specialty}</p>
-                <p className="mt-5 text-sm leading-7 text-white/65">{t.noCatHint}</p>
-                <div className="mt-5">
+                <p className="mt-5 text-sm leading-7 text-white/65 lg:mt-3 lg:leading-6">{t.noCatHint}</p>
+                <div className="mt-5 lg:mt-3">
                   <CatSpeech name={catName} text={t.catSaysCreate} showAvatar={false} />
                 </div>
                 <button
                   type="button"
                   onClick={handleCreate}
-                  className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-mint px-5 font-black text-ink transition hover:bg-white"
+                  className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-mint px-5 font-black text-ink transition hover:bg-white lg:mt-4"
                 >
                   <Sparkles size={19} />
                   {t.createCatButton}
