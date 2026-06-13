@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, ImagePlus, Sparkles, Upload } from "lucide-react";
+import { CheckCircle2, Download, ImagePlus, Sparkles, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type ChangeEvent } from "react";
 import { AppShell } from "@/components/AppShell";
@@ -11,14 +11,18 @@ import { useCat } from "@/lib/catStore";
 
 export default function CreatePage() {
   const router = useRouter();
-  const { t, locale, catName, setCatName, owner, setOwner, specialty, setSpecialty, setImageUrl, hasActiveCat, createCat } = useCat();
+  const { t, locale, catName, setCatName, owner, setOwner, specialty, setSpecialty, imageUrl, setImageUrl, hasActiveCat, createCat } = useCat();
   const [showActiveCatModal, setShowActiveCatModal] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const [createSuccess, setCreateSuccess] = useState(false);
   const importInputRef = useRef<HTMLInputElement | null>(null);
+  const mobileImportInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    setUploadedFileName(file.name);
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") setImageUrl(reader.result);
@@ -32,7 +36,8 @@ export default function CreatePage() {
       return;
     }
     createCat();
-    router.push("/my-cat");
+    setCreateSuccess(true);
+    window.setTimeout(() => router.push("/my-cat"), 650);
   };
 
   const exportSaveData = () => {
@@ -89,15 +94,28 @@ export default function CreatePage() {
 
       <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
         <div className="neon-panel rounded-lg p-5 lg:p-4">
-          <label className="cyber-card grid min-h-56 cursor-pointer place-items-center rounded-lg border border-mint/35 bg-mint/10 p-6 text-center transition hover:bg-mint/20 lg:min-h-32 lg:p-4">
+          <label className="cyber-card grid min-h-32 cursor-pointer place-items-center rounded-lg border border-mint/35 bg-mint/10 p-4 text-left transition hover:bg-mint/20 lg:min-h-32 lg:p-4">
             <input type="file" accept="image/*" className="sr-only" onChange={handleFile} />
-            <span className="flex flex-col items-center gap-4 lg:flex-row lg:text-left">
-              <span className="grid h-16 w-16 place-items-center rounded-lg bg-mint text-ink lg:h-11 lg:w-11 lg:shrink-0">
-                <ImagePlus className="h-8 w-8 lg:h-6 lg:w-6" />
+            <span className="flex w-full items-center gap-4">
+              <span className="grid h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-mint text-ink lg:h-11 lg:w-11">
+                {imageUrl ? (
+                  <img src={imageUrl} alt={owner} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="grid h-full w-full place-items-center">
+                    <ImagePlus className="h-8 w-8 lg:h-6 lg:w-6" />
+                  </span>
+                )}
               </span>
-              <span>
-                <span className="block text-2xl font-black uppercase text-white lg:text-xl">{t.uploadPhoto}</span>
+              <span className="min-w-0">
+                <span className="block text-xl font-black uppercase text-white lg:text-xl">{t.uploadPhoto}</span>
                 <span className="mt-2 block text-sm font-bold text-white/55 lg:mt-1">{t.selectPhoto}</span>
+                {imageUrl ? (
+                  <span className="mt-3 flex min-w-0 items-center gap-2 rounded-lg border border-mint/35 bg-ink/65 px-3 py-2 text-xs font-black text-mint">
+                    <CheckCircle2 size={15} className="shrink-0" />
+                    <span className="shrink-0">{locale === "en" ? "Image uploaded" : "画像アップロード完了"}</span>
+                    {uploadedFileName ? <span className="truncate text-white/55">{uploadedFileName}</span> : null}
+                  </span>
+                ) : null}
               </span>
             </span>
           </label>
@@ -129,7 +147,7 @@ export default function CreatePage() {
             </label>
           </div>
 
-          <section className="mt-5 rounded-lg border border-mint/30 bg-mint/10 p-4 lg:mt-4 lg:p-3">
+          <section className="mt-5 hidden rounded-lg border border-mint/30 bg-mint/10 p-4 lg:mt-4 lg:block lg:p-3">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-mint">Save Data</p>
             <p className="mt-2 text-sm leading-6 text-white/58 lg:hidden">
               {locale === "en"
@@ -176,15 +194,50 @@ export default function CreatePage() {
                 <button
                   type="button"
                   onClick={handleCreate}
-                  className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-mint px-5 font-black text-ink transition hover:bg-white lg:mt-4"
+                  disabled={createSuccess}
+                  className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-mint px-5 font-black text-ink transition hover:bg-white disabled:cursor-wait disabled:bg-white lg:mt-4"
                 >
-                  <Sparkles size={19} />
-                  {t.createCatButton}
+                  {createSuccess ? <CheckCircle2 size={19} /> : <Sparkles size={19} />}
+                  {createSuccess ? (locale === "en" ? "Your Intern Cat has been created" : "Intern Catを作成しました") : t.createCatButton}
                 </button>
+                {createSuccess ? (
+                  <p className="mt-3 rounded-lg border border-mint/35 bg-mint/10 p-3 text-sm font-bold text-mint">
+                    {locale === "en" ? "Moving to My Cat..." : "My Catへ移動します..."}
+                  </p>
+                ) : null}
               </div>
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="mt-5 rounded-lg border border-mint/30 bg-mint/10 p-4 lg:hidden">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-mint">Save Data</p>
+        <p className="mt-2 text-sm leading-6 text-white/58">
+          {locale === "en"
+            ? "Back up your active cat, retired cats, items, XP, and memories as a JSON file."
+            : "今いる猫、引退猫、アイテム、XP、記憶をJSONファイルとしてバックアップできます。"}
+        </p>
+        <div className="mt-3 grid gap-2">
+          <button
+            type="button"
+            onClick={exportSaveData}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-mint/45 px-4 font-black text-white transition hover:bg-mint hover:text-ink"
+          >
+            <Download size={17} />
+            Export Save Data
+          </button>
+          <button
+            type="button"
+            onClick={() => mobileImportInputRef.current?.click()}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/12 px-4 font-black text-white transition hover:bg-white/10"
+          >
+            <Upload size={17} />
+            Import Save Data
+          </button>
+        </div>
+        <input ref={mobileImportInputRef} type="file" accept="application/json,.json" className="sr-only" onChange={importSaveData} />
+        {saveMessage ? <p className="mt-3 rounded-lg border border-white/10 bg-ink/70 p-3 text-sm font-bold text-white/68">{saveMessage}</p> : null}
       </section>
 
       {showActiveCatModal ? (
