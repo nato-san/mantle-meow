@@ -109,11 +109,13 @@ export const normalizeCollectedItems = (items: unknown): CollectedItem[] => {
 
 export const mergeCollectedItems = (items: CollectedItem[]) => {
   const seen = new Set<string>();
+  const seenLevels = new Set<number>();
   return items
     .map((item) => ({ ...item, id: normalizeItemId(item.id) }))
     .filter((item) => {
-      if (seen.has(item.id)) return false;
+      if (seen.has(item.id) || seenLevels.has(item.acquiredLevel)) return false;
       seen.add(item.id);
+      seenLevels.add(item.acquiredLevel);
       return true;
     });
 };
@@ -183,6 +185,7 @@ const pickRarity = (level: number): ItemRarity => {
 
 export const pickLevelRewardItem = (level: number, collectedItems: CollectedItem[]): CollectedItem | null => {
   if (level < 2) return null;
+  if (collectedItems.some((item) => item.acquiredLevel === level)) return null;
   if (level === 2) {
     return collectedItems.some((item) => item.id === levelPinItem.id)
       ? null

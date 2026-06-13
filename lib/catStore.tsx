@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { ChatMessage } from "@/components/ChatPanel";
 import { defaultCatImage, getCatImageCandidates, pickCatImage } from "@/lib/catImages";
 import { copy, type Locale } from "@/lib/i18n";
@@ -436,6 +436,7 @@ export function CatProvider({ children }: { children: React.ReactNode }) {
   const [retiredCats, setRetiredCats] = useState<RetiredCat[]>([]);
   const [levelUp, setLevelUp] = useState<LevelUpState | null>(null);
   const [demoMode, setDemoMode] = useState(false);
+  const rewardedItemLevels = useRef<Set<number>>(new Set());
 
   const t = copy[locale];
   const level = getLevel(xp);
@@ -499,6 +500,7 @@ export function CatProvider({ children }: { children: React.ReactNode }) {
         const levelPinReward = savedLevel >= 2 ? pickLevelRewardItem(2, nextCollectedItems) : null;
         const hydratedCollectedItems = levelPinReward ? mergeCollectedItems([levelPinReward, ...nextCollectedItems]) : nextCollectedItems;
         setCollectedItems(hydratedCollectedItems);
+        rewardedItemLevels.current = new Set(hydratedCollectedItems.map((item) => item.acquiredLevel));
         const nextEquippedItemIds = normalizeEquippedItemIds(saved.equippedItemIds, hydratedCollectedItems);
         setEquippedItemIdsState(nextEquippedItemIds.length > 0 ? nextEquippedItemIds : getDefaultEquippedItemIds(hydratedCollectedItems));
         if (Array.isArray(saved.conversationMemories)) {
@@ -584,9 +586,10 @@ export function CatProvider({ children }: { children: React.ReactNode }) {
       let rewardItem: CollectedItem | null = null;
       if (nextLevel > previousLevel) {
         const rewardLevel = previousLevel < 2 && nextLevel >= 2 ? 2 : nextLevel;
-        rewardItem = pickLevelRewardItem(rewardLevel, collectedItems);
+        rewardItem = rewardedItemLevels.current.has(rewardLevel) ? null : pickLevelRewardItem(rewardLevel, collectedItems);
+        if (rewardItem) rewardedItemLevels.current.add(rewardLevel);
         setCollectedItems((currentItems) => {
-          if (!rewardItem || currentItems.some((item) => item.id === rewardItem?.id)) return currentItems;
+          if (!rewardItem || currentItems.some((item) => item.id === rewardItem?.id || item.acquiredLevel === rewardItem?.acquiredLevel)) return currentItems;
           return mergeCollectedItems([rewardItem, ...currentItems]);
         });
         setLevelUp({
@@ -652,9 +655,10 @@ export function CatProvider({ children }: { children: React.ReactNode }) {
       const previousLevel = getLevel(current);
       const nextLevel = getLevel(nextXp);
       if (nextLevel > previousLevel) {
-        const rewardItem = pickLevelRewardItem(nextLevel, collectedItems);
+        const rewardItem = rewardedItemLevels.current.has(nextLevel) ? null : pickLevelRewardItem(nextLevel, collectedItems);
+        if (rewardItem) rewardedItemLevels.current.add(nextLevel);
         setCollectedItems((currentItems) => {
-          if (!rewardItem || currentItems.some((item) => item.id === rewardItem.id)) return currentItems;
+          if (!rewardItem || currentItems.some((item) => item.id === rewardItem.id || item.acquiredLevel === rewardItem.acquiredLevel)) return currentItems;
           return mergeCollectedItems([rewardItem, ...currentItems]);
         });
         setLevelUp({
@@ -691,6 +695,7 @@ export function CatProvider({ children }: { children: React.ReactNode }) {
     setConversationTraining(null);
     setQuizMasteredTopicIds([]);
     setCompletedSpecialTaskIds([]);
+    rewardedItemLevels.current = new Set();
     setCollectedItems([]);
     setEquippedItemIdsState([]);
     addExperience(1, note, undefined, undefined, nextPersonality, nextCatImageUrl, true);
@@ -1052,6 +1057,7 @@ export function CatProvider({ children }: { children: React.ReactNode }) {
     setLearnedTopicIds([]);
     setQuizMasteredTopicIds([]);
     setCompletedSpecialTaskIds([]);
+    rewardedItemLevels.current = new Set();
     setCollectedItems([]);
     setEquippedItemIdsState([]);
     setConversationMemories([]);
