@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { Activity, BadgeDollarSign, Brain, Heart, Search, ShieldPlus, Sparkles, Trophy, WalletCards, Zap } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { BondPanel } from "@/components/BondPanel";
@@ -16,6 +17,18 @@ import { StatPill } from "@/components/StatPill";
 import { useCat } from "@/lib/catStore";
 import { personalityCopy } from "@/lib/personality";
 import { researchCommands, type ResearchCommandId } from "@/lib/researchCommands";
+
+function MobileFold({ title, children, defaultOpen = false }: { title: string; children: ReactNode; defaultOpen?: boolean }) {
+  return (
+    <details className="rounded-lg border border-mint/30 bg-ink/78 p-3 shadow-glow lg:hidden [&_.neon-panel]:border-white/10 [&_.neon-panel]:bg-transparent [&_.neon-panel]:shadow-none" open={defaultOpen}>
+      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-black uppercase tracking-[0.14em] text-mint [&::-webkit-details-marker]:hidden">
+        <span>{title}</span>
+        <span className="grid h-8 w-8 place-items-center rounded-md border border-mint/25 text-lg leading-none text-white/60">+</span>
+      </summary>
+      <div className="mt-3">{children}</div>
+    </details>
+  );
+}
 
 export default function MyCatPage() {
   const { t, locale, catName, specialty, personality, xp, level, progress, mood, messages, teachCat, runResearchCommand } = useCat();
@@ -52,6 +65,33 @@ export default function MyCatPage() {
     };
   }, [locale]);
 
+  const quickActionButtons = (
+    <>
+      {researchCommands.map((command) => {
+        const Icon = commandIcons[command.id];
+        const commandCopy = command[locale];
+
+        return (
+          <button
+            key={command.id}
+            type="button"
+            onClick={() => void runResearchCommand(command.id)}
+            className="flex w-full items-start gap-3 rounded-lg border border-mint/35 bg-mint/10 p-3 text-left transition hover:border-mint/65 hover:bg-mint/18"
+          >
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-ink text-mint">
+              <Icon size={19} />
+            </span>
+            <span>
+              <span className="block font-black text-white">{commandCopy.label}</span>
+              <span className="mt-1 block text-xs leading-5 text-white/58">{commandCopy.description}</span>
+              <span className="mt-1 block text-xs font-bold text-mint">+{command.xp} Research XP</span>
+            </span>
+          </button>
+        );
+      })}
+    </>
+  );
+
   return (
     <AppShell>
       <PageHeader kicker={t.myCatKicker} title={t.myCatTitle} body={t.myCatBody} />
@@ -61,14 +101,25 @@ export default function MyCatPage() {
         <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-ink via-ink/82 to-transparent" />
 
         <div className="relative z-10 grid gap-4 lg:grid-cols-[0.74fr_1.16fr_0.86fr] lg:items-stretch">
-          <aside className="order-2 grid gap-3 lg:order-1">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+          <aside className="order-2 lg:order-1">
+            <div className="hidden gap-3 lg:grid">
               <StatPill icon={Trophy} label={t.level} value={`Lv.${level}`} />
               <StatPill icon={Zap} label={t.totalXp} value={`${xp} XP`} />
               <StatPill icon={Brain} label={t.nextLevel} value={`${progress}%`} />
               <StatPill icon={Heart} label={t.mood} value={mood} />
+              <BondPanel />
             </div>
-            <BondPanel />
+            <MobileFold title={t.bondTitle}>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <StatPill icon={Trophy} label={t.level} value={`Lv.${level}`} />
+                <StatPill icon={Zap} label={t.totalXp} value={`${xp} XP`} />
+                <StatPill icon={Brain} label={t.nextLevel} value={`${progress}%`} />
+                <StatPill icon={Heart} label={t.mood} value={mood} />
+              </div>
+              <div className="mt-3">
+                <BondPanel />
+              </div>
+            </MobileFold>
           </aside>
 
           <section className="order-1 grid gap-3 lg:order-2 lg:h-full lg:grid-rows-[auto_minmax(0,1fr)]">
@@ -104,12 +155,21 @@ export default function MyCatPage() {
             </div>
           </section>
 
-          <aside className="order-3 grid gap-4 lg:h-full lg:grid-rows-[minmax(0,1fr)_auto]">
+          <aside className="order-3 hidden gap-4 lg:grid lg:h-full lg:grid-rows-[minmax(0,1fr)_auto]">
             <ItemBox />
             <EvolutionMilestones />
           </aside>
         </div>
       </section>
+
+      <div className="mt-4 grid gap-3 lg:hidden">
+        <MobileFold title={t.itemBoxTitle}>
+          <ItemBox />
+        </MobileFold>
+        <MobileFold title={t.evolutionTitle}>
+          <EvolutionMilestones />
+        </MobileFold>
+      </div>
 
       <section className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.65fr)]">
         <ChatPanel
@@ -126,37 +186,28 @@ export default function MyCatPage() {
           style={chatPanelHeight ? { height: `${chatPanelHeight}px` } : undefined}
         />
 
-        <section ref={quickActionsRef} className="neon-panel flex flex-col rounded-lg p-4">
-          <p className="mb-3 text-sm font-black uppercase tracking-[0.16em] text-white/45">{t.softLessons}</p>
-          <div className="mb-3 grid gap-3">
-            {researchCommands.map((command) => {
-              const Icon = commandIcons[command.id];
-              const commandCopy = command[locale];
+        <MobileFold title={t.softLessons}>
+          <div className="grid gap-3">{quickActionButtons}</div>
+          <p className="mt-3 rounded-lg border border-white/10 bg-white/[0.035] p-3 text-sm leading-6 text-white/58">{t.nansenCommandHint}</p>
+        </MobileFold>
 
-              return (
-                <button
-                  key={command.id}
-                  type="button"
-                  onClick={() => void runResearchCommand(command.id)}
-                  className="flex w-full items-start gap-3 rounded-lg border border-mint/35 bg-mint/10 p-3 text-left transition hover:border-mint/65 hover:bg-mint/18"
-                >
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-ink text-mint">
-                    <Icon size={19} />
-                  </span>
-                  <span>
-                    <span className="block font-black text-white">{commandCopy.label}</span>
-                    <span className="mt-1 block text-xs leading-5 text-white/58">{commandCopy.description}</span>
-                    <span className="mt-1 block text-xs font-bold text-mint">+{command.xp} Research XP</span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+        <section ref={quickActionsRef} className="neon-panel hidden flex-col rounded-lg p-4 lg:flex">
+          <p className="mb-3 text-sm font-black uppercase tracking-[0.16em] text-white/45">{t.softLessons}</p>
+          <div className="mb-3 grid gap-3">{quickActionButtons}</div>
           <p className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-sm leading-6 text-white/58">{t.nansenCommandHint}</p>
         </section>
       </section>
 
-      <section className="mt-5 grid items-start gap-5 xl:grid-cols-[0.86fr_1.14fr]">
+      <section className="mt-5 grid gap-3 lg:hidden">
+        <MobileFold title="Special Tasks">
+          <SpecialTasks />
+        </MobileFold>
+        <MobileFold title={t.learnedKnowledge}>
+          <KnowledgeTree compact />
+        </MobileFold>
+      </section>
+
+      <section className="mt-5 hidden items-start gap-5 lg:grid xl:grid-cols-[0.86fr_1.14fr]">
         <SpecialTasks />
         <KnowledgeTree compact />
       </section>

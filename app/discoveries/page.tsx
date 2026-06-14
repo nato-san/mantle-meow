@@ -55,9 +55,11 @@ export default function DiscoveriesPage() {
 
       <section className="grid gap-4 lg:grid-cols-[0.78fr_1.22fr]">
         <div className="neon-panel rounded-lg p-4">
-          <OwnerBadge />
-          <CatPortrait variant="front" className="mx-auto h-60 w-full max-w-xs" showAccessories={false} />
           <CatSpeech name={catName} text={t.catSaysDiscoveries} showAvatar={false} />
+          <CatPortrait variant="front" className="mx-auto h-60 w-full max-w-xs" showAccessories={false} />
+          <div className="mt-4">
+            <OwnerBadge />
+          </div>
           <div className="mt-4 rounded-lg border border-white/10 bg-ink/70 p-3">
             <p className="text-sm font-black uppercase tracking-[0.16em] text-mint">{t.catMemory}</p>
             <p className="mt-2 text-3xl font-black text-white">{catName}</p>

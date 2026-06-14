@@ -182,15 +182,15 @@ export default function CreatePage() {
           <div className="relative z-10">
             <p className="text-sm font-black uppercase tracking-[0.18em] text-mint">{t.catPreview}</p>
             <div className="mt-5 grid gap-5 sm:grid-cols-[1fr_0.9fr] sm:items-center lg:mt-3 lg:gap-4">
-              <CatPortrait variant="front" className="mx-auto h-80 w-full max-w-sm lg:h-60 lg:max-w-xs" showAccessories={false} />
+              <div className="grid gap-4">
+                <CatSpeech name={catName} text={t.catSaysCreate} showAvatar={false} />
+                <CatPortrait variant="front" className="mx-auto h-80 w-full max-w-sm lg:h-60 lg:max-w-xs" showAccessories={false} />
+              </div>
               <div className="rounded-lg border border-white/10 bg-ink/70 p-5 lg:p-4">
                 <OwnerBadge />
                 <p className="mt-5 text-4xl font-black text-white lg:mt-4 lg:text-3xl">{catName}</p>
                 <p className="mt-2 text-lg font-bold text-mint">{specialty}</p>
                 <p className="mt-5 text-sm leading-7 text-white/65 lg:mt-3 lg:leading-6">{t.noCatHint}</p>
-                <div className="mt-5 lg:mt-3">
-                  <CatSpeech name={catName} text={t.catSaysCreate} showAvatar={false} />
-                </div>
                 <button
                   type="button"
                   onClick={handleCreate}
