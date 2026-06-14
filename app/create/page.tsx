@@ -92,8 +92,8 @@ export default function CreatePage() {
         <p className="mt-3 max-w-3xl text-sm leading-7 text-white/68 sm:text-base lg:mt-2 lg:text-sm lg:leading-6">{t.createBody}</p>
       </header>
 
-      <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-        <div className="neon-panel rounded-lg p-5 lg:p-4">
+      <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch">
+        <div className="neon-panel rounded-lg p-5 lg:h-full lg:p-4">
           <label className="cyber-card grid min-h-32 cursor-pointer place-items-center rounded-lg border border-mint/35 bg-mint/10 p-4 text-left transition hover:bg-mint/20 lg:min-h-32 lg:p-4">
             <input type="file" accept="image/*" className="sr-only" onChange={handleFile} />
             <span className="flex w-full items-center gap-4">
@@ -177,14 +177,14 @@ export default function CreatePage() {
           </section>
         </div>
 
-        <div className="neon-panel relative self-start overflow-hidden rounded-lg p-5 lg:p-4">
+        <div className="neon-panel relative overflow-hidden rounded-lg p-5 lg:h-full lg:p-4">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(116,247,199,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(116,247,199,0.05)_1px,transparent_1px)] bg-[size:34px_34px]" />
           <div className="relative z-10">
             <p className="text-sm font-black uppercase tracking-[0.18em] text-mint">{t.catPreview}</p>
             <div className="mt-5 grid gap-5 sm:grid-cols-[1fr_0.9fr] sm:items-center lg:mt-3 lg:gap-4">
               <div className="grid gap-4">
                 <CatSpeech name={catName} text={t.catSaysCreate} showAvatar={false} />
-                <CatPortrait variant="front" className="mx-auto h-80 w-full max-w-sm lg:h-60 lg:max-w-xs" showAccessories={false} />
+                <CatPortrait variant="front" className="mx-auto h-80 w-full max-w-sm sm:h-96 sm:max-w-md lg:h-72 lg:max-w-sm xl:h-80 xl:max-w-md" showAccessories={false} />
               </div>
               <div className="rounded-lg border border-white/10 bg-ink/70 p-5 lg:p-4">
                 <OwnerBadge />
